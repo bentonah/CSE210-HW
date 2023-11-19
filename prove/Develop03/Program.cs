@@ -35,7 +35,7 @@ class Program
             if (userInput.Equals("quit", StringComparison.OrdinalIgnoreCase))
                 break;
 
-            randomScripture.HideRandomWords(3); // Adjust as needed
+            randomScripture.HideRandomWords(3);
             Console.Clear();
 
         } while (!scriptureLibrary.AllScripturesCompletelyHidden());
@@ -61,7 +61,7 @@ class Program
         scriptureLibrary.AddScripture(new Reference(book, chapter, startVerse, endVerse), text);
     }
 
-    // Represents a scripture reference (e.g., John 3:16)
+    // Represents a scripture reference
     class Reference
     {
         private string _book;
@@ -175,7 +175,7 @@ class Program
     }
 
     // EXCEEDS EXPECTATIONS BY ADDING A SCRIPTURE LIBRARY
-    
+
     // A library of scriptures that can be chosen from
     class ScriptureLibrary
     {
