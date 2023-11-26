@@ -89,7 +89,6 @@ class ReflectionActivity : Activity
     private List<string> usedPrompts;
     private List<string> usedQuestions;
 
-    // Subclass constructor
     public ReflectionActivity() : base("Reflection", "This activity will help you reflect on times in your life when you have shown strength and resilience. This will help you recognize the power you have and how you can use it in other aspects of your life.")
     {
         prompts = new List<string>
@@ -110,13 +109,13 @@ class ReflectionActivity : Activity
         usedQuestions = new List<string>();
     }
 
-    // Run the reflection activity
+    // Runs the reflection activity
     public void Run()
     {
         DisplayStartingMessage();
         Console.WriteLine("Get ready for reflection.");
 
-        // Shuffle the prompts and questions to ensure randomness
+        // EXCEEDS REQUIREMENTS - shuffles the prompts and questions to ensure they are random
         Shuffle(prompts);
         Shuffle(questions);
 
@@ -128,14 +127,14 @@ class ReflectionActivity : Activity
             DisplayQuestions();
         }
 
-        // Clear used prompts and questions at the end of the session
+        // Clears any used prompts and questions at the end of the session
         usedPrompts.Clear();
         usedQuestions.Clear();
 
         DisplayEndingMessage();
     }
 
-    // Get a random prompt, ensuring it has not been used in this session
+    // Gets a random prompt, ensuring it has not been used in the current session
     private string GetRandomPrompt()
     {
         string prompt;
@@ -148,7 +147,7 @@ class ReflectionActivity : Activity
         return prompt;
     }
 
-    // Get a random question, ensuring it has not been used in this session
+    // Gets a random question, ensuring it has not been used in the current session
     private string GetRandomQuestion()
     {
         string question;
@@ -161,10 +160,10 @@ class ReflectionActivity : Activity
         return question;
     }
 
-    // Display random questions
+    // Displays random questions
     private void DisplayQuestions()
     {
-        for (int i = 0; i < 2; i++) // Display two random questions
+        for (int i = 0; i < 2; i++) // Displays two random questions
         {
             string question = GetRandomQuestion();
             Console.WriteLine(question);
@@ -173,7 +172,7 @@ class ReflectionActivity : Activity
         }
     }
 
-    // Helper method to shuffle a list
+    // EXCEEDS REQUIREMENTS - shuffles the list of prompts/questions
     private void Shuffle<T>(List<T> list)
     {
         int n = list.Count;
