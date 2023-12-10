@@ -5,84 +5,26 @@ using System.Xml.Serialization;
 
 public interface IExercise
 {
+    int ExerciseId { get; set; }
+    string TargetArea { get; set; }
+    string ExerciseName { get; set; }
+
     void DoExercise(int sets, int reps);
 }
 
-public class ExerciseType
+public abstract class ExerciseBase
 {
-    private string typeName;
-
-    public string TypeName
-    {
-        get { return typeName; }
-        set { typeName = value; }
-    }
+    public int ExerciseId { get; set; }
+    public string ExerciseName { get; set; }
+    public string TargetArea { get; set; }
+    public DateTime WorkoutDateTime { get; set; }
+    public double CaloriesBurned { get; set; }
 }
 
-public class ExerciseIntensity
+public class Exercise : ExerciseBase, IExercise
 {
-    private string intensityName;
-    private int intensityLevel;
-
-    public string IntensityName
+    public virtual void DoExercise(int sets, int reps)
     {
-        get { return intensityName; }
-        set { intensityName = value; }
-    }
-
-    public int IntensityLevel
-    {
-        get { return intensityLevel; }
-        set { intensityLevel = value; }
-    }
-}
-
-public abstract class Exercise : IExercise
-{
-    private string name;
-    private string targetArea;
-
-    public string Name
-    {
-        get { return name; }
-        set { name = value; }
-    }
-
-    public string TargetArea
-    {
-        get { return targetArea; }
-        set { targetArea = value; }
-    }
-
-    public abstract void DoExercise(int sets, int reps);
-}
-
-public class ExerciseIntensity
-{
-    private string intensityName;
-    private int intensityLevel;
-
-    public string IntensityName
-    {
-        get { return intensityName; }
-        set { intensityName = value; }
-    }
-
-    public int IntensityLevel
-    {
-        get { return intensityLevel; }
-        set { intensityLevel = value; }
-    }
-}
-
-public class ExerciseType
-{
-    private string typeName;
-
-    public string TypeName
-    {
-        get { return typeName; }
-        set { typeName = value; }
     }
 }
 
@@ -90,7 +32,7 @@ public class PushUpExercise : Exercise
 {
     public override void DoExercise(int sets, int reps)
     {
-        Console.WriteLine($"Performing {Name} - Target Area: {TargetArea} - Sets: {sets}, Reps: {reps}");
+        Console.WriteLine($"Performing {ExerciseName} - Target Area: {TargetArea} - Sets: {sets}, Reps: {reps}");
     }
 }
 
@@ -98,7 +40,7 @@ public class LegPressExercise : Exercise
 {
     public override void DoExercise(int sets, int reps)
     {
-        Console.WriteLine($"Performing {Name} - Target Area: {TargetArea} - Sets: {sets}, Reps: {reps}");
+        Console.WriteLine($"Performing {ExerciseName} - Target Area: {TargetArea} - Sets: {sets}, Reps: {reps}");
     }
 }
 
@@ -106,10 +48,9 @@ public class BicepCurlExercise : Exercise
 {
     public override void DoExercise(int sets, int reps)
     {
-        Console.WriteLine($"Performing {Name} - Target Area: {TargetArea} - Sets: {sets}, Reps: {reps}");
+        Console.WriteLine($"Performing {ExerciseName} - Target Area: {TargetArea} - Sets: {sets}, Reps: {reps}");
     }
 }
-
 
 public class CustomExercise : Exercise
 {
@@ -119,18 +60,10 @@ public class CustomExercise : Exercise
     }
 }
 
-public abstract class ExerciseBase
-{
-    public string ExerciseName { get; set; }
-    public string TargetArea { get; set; }
-}
-
 public class WorkoutData : ExerciseBase
 {
     public int Sets { get; set; }
     public int Reps { get; set; }
-    public DateTime WorkoutDateTime { get; set; }
-    public double CaloriesBurned { get; set; }
     public string TimeOfDay { get; set; }
 }
 
@@ -138,7 +71,6 @@ public class CustomExerciseData : ExerciseBase
 {
     public int Sets { get; set; }
     public int Reps { get; set; }
-    public DateTime WorkoutDateTime { get; set; }
 }
 
 public class WorkoutDataRepository
@@ -147,6 +79,14 @@ public class WorkoutDataRepository
 
     public List<ExerciseBase> LoadWorkoutData()
     {
+        if (File.Exists(FilePath))
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(List<ExerciseBase>));
+            using (TextReader reader = new StreamReader(FilePath))
+            {
+                return (List<ExerciseBase>)serializer.Deserialize(reader);
+            }
+        }
         return new List<ExerciseBase>();
     }
 
@@ -168,6 +108,7 @@ public class WorkoutDataRepository
 
     private double CalculateCaloriesBurned(ExerciseBase exerciseData)
     {
+        // Implement the actual logic for calorie calculation
         return 0.0;
     }
 }
@@ -196,7 +137,7 @@ public class WorkoutPlanner
     {
         for (int i = 0; i < exercises.Count; i++)
         {
-            Console.WriteLine($"{i + 1}. {exercises[i].Name} - Target Area: {exercises[i].TargetArea}");
+            Console.WriteLine($"{i + 1}. {exercises[i].ExerciseName} - Target Area: {exercises[i].TargetArea}");
         }
     }
 
@@ -234,6 +175,37 @@ public class WorkoutPlanner
         return (UserInterface.GetIntInput("Enter custom sets:"), UserInterface.GetIntInput("Enter custom reps:"));
     }
 
+    private double CalculateCaloriesBurned(IExercise exercise, int durationInMinutes)
+    {
+        const double CaloriesPerMinuteLowIntensity = 3.5;
+        const double CaloriesPerMinuteMediumIntensity = 5.0;
+        const double CaloriesPerMinuteHighIntensity = 7.0;
+
+        double caloriesPerMinute;
+
+        switch (exercise.ExerciseId)
+        {
+            case 1:
+                caloriesPerMinute = CaloriesPerMinuteLowIntensity;
+                break;
+            case 2:
+                caloriesPerMinute = CaloriesPerMinuteMediumIntensity;
+                break;
+            case 3:
+                caloriesPerMinute = CaloriesPerMinuteHighIntensity;
+                break;
+            default:
+                Console.WriteLine("Invalid exercise intensity.");
+                return 0.0;
+        }
+
+        double totalCaloriesBurned = caloriesPerMinute * durationInMinutes;
+
+        Console.WriteLine($"Calories burned for {exercise.ExerciseName}: {totalCaloriesBurned}");
+
+        return totalCaloriesBurned;
+    }
+
     public void StartWorkout()
     {
         Console.WriteLine("Choose an exercise:");
@@ -256,7 +228,8 @@ public class WorkoutPlanner
 
             CustomExercise customExercise = new CustomExercise
             {
-                Name = "Custom Exercise",
+                ExerciseId = 0,
+                ExerciseName = "Custom Exercise",
                 TargetArea = selectedExercise.TargetArea
             };
 
@@ -264,7 +237,8 @@ public class WorkoutPlanner
 
             dataRepository.SaveWorkoutData(new CustomExerciseData
             {
-                ExerciseName = customExercise.Name,
+                ExerciseId = customExercise.ExerciseId,
+                ExerciseName = customExercise.ExerciseName,
                 TargetArea = customExercise.TargetArea,
                 Sets = customSets,
                 Reps = customReps,
@@ -275,26 +249,24 @@ public class WorkoutPlanner
         {
             (defaultSets, defaultReps) = GetDefaultSetsAndReps(intensityChoice);
 
+            int durationInMinutes = UserInterface.GetIntInput("Enter workout duration in minutes:");
+
             selectedExercise.DoExercise(defaultSets, defaultReps);
 
             dataRepository.SaveWorkoutData(new WorkoutData
             {
-                ExerciseName = selectedExercise.Name,
+                ExerciseId = selectedExercise.ExerciseId,
+                ExerciseName = selectedExercise.ExerciseName,
                 TargetArea = selectedExercise.TargetArea,
                 Sets = defaultSets,
                 Reps = defaultReps,
                 WorkoutDateTime = DateTime.Now,
-                CaloriesBurned = CalculateCaloriesBurned(selectedExercise, defaultSets, defaultReps),
+                CaloriesBurned = CalculateCaloriesBurned(selectedExercise, durationInMinutes),
                 TimeOfDay = "Morning",
             });
         }
 
         Console.WriteLine(GetMotivationalMessage());
-    }
-
-    private double CalculateCaloriesBurned(IExercise exercise, int sets, int reps)
-    {
-        return 0.0;
     }
 
     private string GetMotivationalMessage()
