@@ -175,31 +175,45 @@ public class WorkoutPlanner
         return (UserInterface.GetIntInput("Enter custom sets:"), UserInterface.GetIntInput("Enter custom reps:"));
     }
 
+    private double GetUserWeight()
+    {
+        double weightInLbs = UserInterface.GetIntInput("Enter your body weight in pounds:");
+        return ConvertPoundsToKilograms(weightInLbs);
+    }
+
+    private double ConvertPoundsToKilograms(double weightInLbs)
+    {
+        const double PoundsToKilogramsConversionFactor = 0.453592;
+        return weightInLbs * PoundsToKilogramsConversionFactor;
+    }
+
     private double CalculateCaloriesBurned(IExercise exercise, int durationInMinutes)
     {
-        const double CaloriesPerMinuteLowIntensity = 3.5;
-        const double CaloriesPerMinuteMediumIntensity = 5.0;
-        const double CaloriesPerMinuteHighIntensity = 7.0;
+        const double METLowIntensity = 3.5;
+        const double METMediumIntensity = 5.0;
+        const double METHighIntensity = 7.0;
 
-        double caloriesPerMinute;
+        double MET;
 
         switch (exercise.ExerciseId)
         {
             case 1:
-                caloriesPerMinute = CaloriesPerMinuteLowIntensity;
+                MET = METLowIntensity;
                 break;
             case 2:
-                caloriesPerMinute = CaloriesPerMinuteMediumIntensity;
+                MET = METMediumIntensity;
                 break;
             case 3:
-                caloriesPerMinute = CaloriesPerMinuteHighIntensity;
+                MET = METHighIntensity;
                 break;
             default:
                 Console.WriteLine("Invalid exercise intensity.");
                 return 0.0;
         }
 
-        double totalCaloriesBurned = caloriesPerMinute * durationInMinutes;
+        double userWeight = GetUserWeight();
+
+        double totalCaloriesBurned = (durationInMinutes * MET * userWeight) / 200;
 
         Console.WriteLine($"Calories burned for {exercise.ExerciseName}: {totalCaloriesBurned}");
 
