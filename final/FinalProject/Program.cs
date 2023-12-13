@@ -12,23 +12,20 @@ public interface IExercise
     void DoExercise(int sets, int reps);
 }
 
-public abstract class ExerciseBase
+public abstract class ExerciseBase : IExercise
 {
     public int ExerciseId { get; set; }
     public string ExerciseName { get; set; }
     public string TargetArea { get; set; }
     public DateTime WorkoutDateTime { get; set; }
     public double CaloriesBurned { get; set; }
-}
 
-public class Exercise : ExerciseBase, IExercise
-{
     public virtual void DoExercise(int sets, int reps)
     {
     }
 }
 
-public class PushUpExercise : Exercise
+public class PushUpExercise : ExerciseBase
 {
     public override void DoExercise(int sets, int reps)
     {
@@ -36,7 +33,7 @@ public class PushUpExercise : Exercise
     }
 }
 
-public class LegPressExercise : Exercise
+public class LegPressExercise : ExerciseBase
 {
     public override void DoExercise(int sets, int reps)
     {
@@ -44,7 +41,7 @@ public class LegPressExercise : Exercise
     }
 }
 
-public class BicepCurlExercise : Exercise
+public class BicepCurlExercise : ExerciseBase
 {
     public override void DoExercise(int sets, int reps)
     {
@@ -52,7 +49,7 @@ public class BicepCurlExercise : Exercise
     }
 }
 
-public class CustomExercise : Exercise
+public class CustomExercise : ExerciseBase
 {
     public override void DoExercise(int sets, int reps)
     {
@@ -108,7 +105,6 @@ public class WorkoutDataRepository
 
     private double CalculateCaloriesBurned(ExerciseBase exerciseData)
     {
-        // Implement the actual logic for calorie calculation
         return 0.0;
     }
 }
@@ -118,7 +114,16 @@ public class UserInterface
     public static int GetIntInput(string prompt)
     {
         Console.WriteLine(prompt);
-        return Convert.ToInt32(Console.ReadLine());
+        string input = Console.ReadLine();
+        if (int.TryParse(input, out int result))
+        {
+            return result;
+        }
+        else
+        {
+            Console.WriteLine("Invalid input. Please enter a valid integer.");
+            return GetIntInput(prompt);
+        }
     }
 }
 
